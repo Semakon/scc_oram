@@ -6,19 +6,18 @@ import javax.management.RuntimeErrorException;
 
 /*
  * Name: Martijn de Vries, Dennis Cai
- * StudentID: s1549405, TODO
+ * StudentID: s1549405, s1592041
  */
 
-public class Bucket{
+public class Bucket {
 	private static boolean is_init = false;
 	private static int max_size_Z = -1;
 	
 	private ArrayList<Block> blocks;
 	private int realSize;
 	
-	Bucket(){
-		if(!is_init)
-		{
+	Bucket() {
+		if (!is_init) {
 			throw new RuntimeException("Please set bucket size before creating a bucket");
 		}
 		this.blocks = new ArrayList<>();
@@ -27,8 +26,7 @@ public class Bucket{
 	
 	// Copy constructor
 	Bucket(Bucket other) {
-		if(other == null)
-		{
+		if (other == null) {
 			throw new RuntimeException("the other bucket is not malloced.");
 		}
 		this.blocks = other.blocks;
@@ -79,8 +77,7 @@ public class Bucket{
 	}
 
 	static void setMaxSize(int maximumSize) {
-		if(is_init)
-		{
+		if (is_init) {
 			throw new RuntimeException("Max Bucket Size was already set");
 		}
 		max_size_Z = maximumSize;
