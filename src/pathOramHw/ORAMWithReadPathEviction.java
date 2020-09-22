@@ -3,8 +3,8 @@ package pathOramHw;
 import java.util.ArrayList;
 
 /*
- * Name: TODO
- * NetID: TODO
+ * Name: Martijn de Vries, Dennis Cai
+ * StudentID: s1549405, TODO
  */
 
 public class ORAMWithReadPathEviction implements ORAMInterface{

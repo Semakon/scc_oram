@@ -5,15 +5,16 @@ import java.util.ArrayList;
 import javax.management.RuntimeErrorException;
 
 /*
- * Name: Martijn de Vries
- * StudentID: s1549405
+ * Name: Martijn de Vries, Dennis Cai
+ * StudentID: s1549405, TODO
  */
 
 public class Bucket{
 	private static boolean is_init = false;
 	private static int max_size_Z = -1;
 	
-	//TODO Add necessary variables
+	private ArrayList<Block> blocks;
+	private int realSize;
 	
 	Bucket(){
 		if(!is_init)
@@ -24,8 +25,7 @@ public class Bucket{
 	}
 	
 	// Copy constructor
-	Bucket(Bucket other)
-	{
+	Bucket(Bucket other) {
 		if(other == null)
 		{
 			throw new RuntimeException("the other bucket is not malloced.");
@@ -34,13 +34,18 @@ public class Bucket{
 	}
 	
 	//Implement and add your own methods.
-	Block getBlockByKey(int key){
+	Block getBlockByKey(int key) {
 		// TODO Must complete this method for submission
 		return null;
 	}
 	
-	void addBlock(Block new_blk){
-		// TODO Must complete this method for submission
+	void addBlock(Block new_blk) {
+		if (realSize < max_size_Z) {
+			// There is space in the bucket
+
+		} else {
+			// There is no space in the bucket
+		}
 	}
 	
 	boolean removeBlock(Block rm_blk) {
@@ -48,23 +53,19 @@ public class Bucket{
 		return false;
 	}
 	
-	ArrayList<Block> getBlocks(){
-		// TODO Must complete this method for submission
-		return null;
+	ArrayList<Block> getBlocks() {
+		return blocks;
 	}
 	
-	int returnRealSize(){
-		// TODO Must complete this method for submission
-		return 0;
+	int returnRealSize() {
+		return realSize;
 	}
 
-	static void resetState()
-	{
+	static void resetState() {
 		is_init = false;
 	}
 
-	static void setMaxSize(int maximumSize)
-	{
+	static void setMaxSize(int maximumSize) {
 		if(is_init)
 		{
 			throw new RuntimeException("Max Bucket Size was already set");
