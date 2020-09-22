@@ -13,8 +13,8 @@ interface UntrustedStorageInterface{
 	//You should only use ONE UntrustedStorage in your ORAM.
 	abstract void setCapacity(int totalNumOfBuckets);
 	
-	abstract Bucket ReadBucket(int position);
+	abstract Bucket readBucket(int position);
 	
-	abstract void WriteBucket(int position, Bucket bucket_to_write);	
+	abstract void writeBucket(int position, Bucket bucket_to_write);
 	
 }

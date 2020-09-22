@@ -6,7 +6,7 @@
 
 package pathOramHw;
 
-public class ServerStorageForHW implements UntrustedStorageInterface{
+public class ServerStorageForHW implements UntrustedStorageInterface {
 	
 	private static boolean is_initialized = false;
 	private static boolean is_capacity_set = false;
@@ -14,8 +14,8 @@ public class ServerStorageForHW implements UntrustedStorageInterface{
 
 	Bucket[] buckets;
 	
-	public ServerStorageForHW(){
-		if(is_initialized == true){
+	public ServerStorageForHW() {
+		if (is_initialized) {
 			throw new RuntimeException("ONLY ONE ServerStorage CAN BE USED AT A TIME IN THIS HOMEWORK");
 		}
 		is_initialized  = true;
@@ -23,30 +23,28 @@ public class ServerStorageForHW implements UntrustedStorageInterface{
 	}
 	
 	@Override
-	public Bucket ReadBucket(int position){
-		if(is_capacity_set == false){
+	public Bucket readBucket(int position) {
+		if (!is_capacity_set) {
 			throw new RuntimeException("Please call setCapacity before reading or writing any block");
 		}
-		
-		if(position >= this.capacity || position < 0)
+		if (position >= this.capacity || position < 0) {
 			throw new RuntimeException("You are trying to access Bucket " + position + ", but this Server contains only " + capacity + " buckets.");
-		
-		if(buckets[position] == null) return null;
-		
+		}
+		if (buckets[position] == null) {
+			return null;
+		}
 		return new Bucket(buckets[position]);
 	}
 	
 	@Override
-	public void WriteBucket(int position, Bucket bucket_to_write){
-		if(is_capacity_set == false){
+	public void writeBucket(int position, Bucket bucket_to_write) {
+		if (!is_capacity_set) {
 			throw new RuntimeException("Please call setCapacity before reading or writing any block");
 		}
-
-		if(position >= this.capacity || position < 0)
+		if (position >= this.capacity || position < 0) {
 			throw new RuntimeException("You are trying to access Bucket " + position + ", but this Server contains only " + capacity + " buckets.");
-		
+		}
 		buckets[position] = new Bucket(bucket_to_write);
-		return;
 	}
 
 
@@ -55,15 +53,13 @@ public class ServerStorageForHW implements UntrustedStorageInterface{
 	//You should only use ONE UntrustedStorage in your ORAM.
 	@Override
 	public void setCapacity(int totalNumOfBuckets) {
-		if(is_capacity_set == true){
+		if (is_capacity_set) {
 			throw new RuntimeException("Capacity of ServerStorage cannot be changed");
 		}
 		is_capacity_set = true;
 		this.capacity = totalNumOfBuckets;
 		
 		buckets = new Bucket[totalNumOfBuckets];
-
-		
 	}
 	
 }

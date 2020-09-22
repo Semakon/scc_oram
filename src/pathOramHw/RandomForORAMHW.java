@@ -15,19 +15,15 @@ public class RandomForORAMHW implements RandForORAMInterface {
 	private static int bound = -1;
 	SecureRandom rnd_generator;
 
-	RandomForORAMHW(){
+	RandomForORAMHW() {
 		
-		if(is_initialized == true)
-		{
+		if (is_initialized) {
 			throw new RuntimeException("ONLY ONE RANDOM INSTANCE CAN BE USED AT A TIME");
 		}
 		
-		try
-		{
+		try {
  			rnd_generator = SecureRandom.getInstanceStrong();
-		}
-		catch(Exception e)
-		{
+		} catch(Exception e) {
 			System.err.println(e.toString());
 			System.exit(1);
 		}
@@ -35,12 +31,11 @@ public class RandomForORAMHW implements RandForORAMInterface {
 	}
 	
 	@Override
-	public int getRandomLeaf(){
-		if(bound == -1)
-		{
+	public int getRandomLeaf() {
+		if (bound == -1) {
 			throw new RuntimeException("Bound is not set.");
 		}
-		//returns a random integer between 0 (INCLUSIVE) and bound (EXCLUSIVE)
+		// Returns a random integer between 0 (INCLUSIVE) and bound (EXCLUSIVE)
 		int output = rnd_generator.nextInt(bound);
 		return output;
 	}

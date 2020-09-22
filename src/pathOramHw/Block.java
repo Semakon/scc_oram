@@ -7,7 +7,7 @@
 
 package pathOramHw;
 
-public class Block{
+public class Block {
 	public int index;
 	public byte[] data;
 	
@@ -17,13 +17,13 @@ public class Block{
 		System.arraycopy(data, 0, this.data, 0, this.data.length);
 	}
 	
-	Block(Block b){
+	Block(Block b) {
 		this.index = b.index;
 		this.data = new byte[32];
 		System.arraycopy(b.data, 0, this.data, 0, this.data.length);
 	}
 
-	Block(){
+	Block() {
 		this.index = -1; //dummy index
 		this.data = new byte[32];
 	}
