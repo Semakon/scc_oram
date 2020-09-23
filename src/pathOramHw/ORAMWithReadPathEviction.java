@@ -1,23 +1,34 @@
 package pathOramHw;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /*
  * Name: Martijn de Vries, Dennis Cai
  * StudentID: s1549405, s1592041
  */
 
-public class ORAMWithReadPathEviction implements ORAMInterface{
+public class ORAMWithReadPathEviction implements ORAMInterface {
 	
 	/**
-	 * TODO add necessary variables 
+	 * TODO add necessary variables
 	 */
+	private UntrustedStorageInterface storage;
+	private RandForORAMInterface rand_gen;
+	int bucket_size;
+	int num_blocks;
+	int[] positionMap;
+
+	List<Block> stash = new ArrayList<>();
 	
 	public ORAMWithReadPathEviction(UntrustedStorageInterface storage,
-									RandForORAMInterface rand_gen, int bucket_size, int num_blocks){
-		// TODO complete the constructor
+									RandForORAMInterface rand_gen, int bucket_size, int num_blocks) {
+		this.storage = storage;
+		this.rand_gen = rand_gen;
+		this.bucket_size = bucket_size;
+		this.num_blocks = num_blocks;
+		this.positionMap = new int[num_blocks];
 	}
-
 
 	@Override
 	public byte[] access(Operation op, int blockIndex, byte[] newdata) {
@@ -28,7 +39,7 @@ public class ORAMWithReadPathEviction implements ORAMInterface{
 
 	@Override
 	public int P(int leaf, int level) {
-		// TODO Must complete this method for submission
+
 		return 0;
 	}
 

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public interface ORAMInterface {
 	
-	public enum Operation {READ,WRITE};
+	public enum Operation {READ,WRITE}
 	
 	public byte[] access(Operation op, int blockIndex,byte[] newdata);
 
