@@ -20,7 +20,8 @@ public class Bucket {
 		if (!is_init) {
 			throw new RuntimeException("Please set bucket size before creating a bucket");
 		}
-		//TODO Must complete this method for submission
+		this.blocks = new ArrayList<>();
+		this.realSize = 0;
 	}
 	
 	// Copy constructor
@@ -28,27 +29,39 @@ public class Bucket {
 		if (other == null) {
 			throw new RuntimeException("the other bucket is not malloced.");
 		}
-		//TODO Must complete this method for submission
+		this.blocks = other.blocks;
+		this.realSize = other.realSize;
 	}
 	
 	//Implement and add your own methods.
 	Block getBlockByKey(int key) {
-		// TODO Must complete this method for submission
+		for (Block b : this.blocks) {
+			if (b.index == key) {
+				return b;
+			}
+		}
 		return null;
 	}
 	
 	void addBlock(Block new_blk) {
-		if (realSize < max_size_Z) {
-			// There is space in the bucket
-
+		if (this.blocks.size() < max_size_Z) {
+			// add block to bucket
+			this.blocks.add(new_blk);
+			if (new_blk.index > -1) {
+				this.realSize++;
+			}
 		} else {
-			// There is no space in the bucket
+			// Bucket full
+			throw new RuntimeException("Bucket is already at max size Z");
 		}
 	}
 	
 	boolean removeBlock(Block rm_blk) {
-		// TODO Must complete this method for submission
-		return false;
+		this.blocks.remove(rm_blk);
+		if (rm_blk.index > -1) {
+			this.realSize--;
+		}
+		return true;
 	}
 	
 	ArrayList<Block> getBlocks() {
