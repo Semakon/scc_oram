@@ -148,6 +148,35 @@ public class ORAMWithReadPathEviction implements ORAMInterface {
 		return path;
 	}
 
+//	public ArrayList<Integer> P(int x) {
+//		ArrayList<Integer> path = new ArrayList<>();
+//
+//		int numBuckets = getNumBuckets();
+//		int parent = getNumLeaves();
+//		int currentNode = x;
+//		int[] parentIds = new int[numBuckets - 1];
+//
+//		// Initialize the array of parent ids
+//		for (int i = 0; i < numBuckets - 2; i += 2) {
+//			// Set the parent of the two child nodes
+//			parentIds[i] = parent;
+//			parentIds[i + 1] = parent;
+//
+//			parent++;
+//		}
+//
+//		// Add the leaf node as the first entry to the path
+//		path.add(currentNode);
+//
+//		// Loop through the parentIds array to iteratively add the parents of the nodes to the path
+//		while (currentNode < numBuckets - 1) {
+//			int currentParent = parentIds[currentNode];
+//			path.add(currentParent);
+//
+//			currentNode = currentParent;
+//		}
+//		return path;
+//	}
 
 	@Override
 	public int[] getPositionMap() {
@@ -192,7 +221,5 @@ public class ORAMWithReadPathEviction implements ORAMInterface {
 		// no buckets = 2^(L+1) - 1
 		return (int) Math.pow(2, getNumLevels() + 1) - 1;
 	}
-
-
 	
 }
