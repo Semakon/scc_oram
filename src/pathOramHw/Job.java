@@ -25,10 +25,10 @@ public class Job {
 
 		//Initialize a randomness generator
 		RandForORAMInterface rand_gen = new RandomForORAMHW();
-		
+
 		//Initialize a new Oram
 		ORAMInterface oram = new ORAMWithReadPathEviction(storage, rand_gen, bucket_size, num_blocks);
-		
+
 		//Initialize a buffer value
 		byte[] write_bbuf = new byte[128];
 

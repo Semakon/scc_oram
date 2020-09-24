@@ -26,17 +26,70 @@ public class ORAMWithReadPathEviction implements ORAMInterface {
 		this.num_blocks = num_blocks;
 		this.positionMap = new int[num_blocks];
 
+		// Set storage capacity
+		this.storage.setCapacity(getNumBuckets());
+
 		// populate position map with random variables
 		rand_gen.setBound(getNumLeaves());
 		for (int i = 0; i < num_blocks; i++) {
 			this.positionMap[i] = rand_gen.getRandomLeaf();
 		}
+
+		// populate storage with buckets
+		for (int i = 0; i < getNumBuckets(); i++) {
+			for (int j = 0; j < bucket_size; j++) {
+				this.storage.WriteBucket(i, new Bucket());
+			}
+		}
 	}
 
 	@Override
-	public byte[] access(Operation op, int blockIndex, byte[] newdata) {
+	public byte[] access(Operation op, int a, byte[] newdata) {
+		// Remap block
+		int x = positionMap[a];
+		positionMap[a] = rand_gen.getRandomLeaf();
 
-		return null;
+		// Read path
+		for (int l = 0; l <= getNumLevels(); l++) {
+			ArrayList<Block> bucket_blocks = this.storage.ReadBucket(P(x, l)).getBlocks();
+			this.stash.addAll(bucket_blocks);
+		}
+
+		// Update block
+		Block block = null;
+		for (Block b : this.stash) {
+			if (b.index == a) {
+				block = b;
+				break;
+			}
+		}
+		if (block == null) {
+			throw new RuntimeException("Block is not in stash");
+		}
+
+		byte[] data = block.data;
+		if (op == Operation.WRITE) {
+			this.stash.remove(block);
+			this.stash.add(new Block(a, newdata));
+		}
+
+		// Write path
+		for (int l = getNumLevels(); l >= 0; l--) {
+			// Find all blocks in the stash that cross paths with x at l
+			ArrayList<Block> temp = new ArrayList<>();
+			for (Block b : this.stash) {
+				if (P(x, l) == P(positionMap[b.index], l)) {
+					temp.add(b);
+				}
+			}
+			Bucket stash_prime = new Bucket();
+			for (int i = 0; i < Math.min(temp.size(), bucket_size); i++) {
+				stash_prime.addBlock(temp.get(i));
+				this.stash.remove(temp.get(i));
+			}
+			this.storage.WriteBucket(P(x, l), stash_prime);
+		}
+		return data;
 	}
 
 

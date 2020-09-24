@@ -11,16 +11,17 @@ public class Bucket {
 	private static boolean is_init = false;
 	private static int max_size_Z = -1;
 
-	private int id;
 	private ArrayList<Block> blocks;
 	private int realSize;
 	
-	public Bucket(int id) {
+	public Bucket() {
 		if (!is_init) {
 			throw new RuntimeException("Please set bucket size before creating a bucket");
 		}
-		this.id = id;
 		this.blocks = new ArrayList<>();
+		for (int i = 0; i < max_size_Z; i++) {
+			this.blocks.add(new Block());
+		}
 		this.realSize = 0;
 	}
 	
@@ -29,7 +30,6 @@ public class Bucket {
 		if (other == null) {
 			throw new RuntimeException("the other bucket is not malloced.");
 		}
-		this.id = other.id;
 		this.blocks = other.blocks;
 		this.realSize = other.realSize;
 	}
@@ -63,14 +63,6 @@ public class Bucket {
 			this.realSize--;
 		}
 		return true;
-	}
-
-	public int getId() {
-		return this.id;
-	}
-
-	public void setId(int new_id) {
-		this.id = new_id;
 	}
 
 	public ArrayList<Block> getBlocks() {
