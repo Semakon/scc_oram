@@ -1,7 +1,6 @@
 package pathOramHw;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /*
  * Name: Martijn de Vries, Dennis Cai
@@ -15,11 +14,11 @@ public class ORAMWithReadPathEviction implements ORAMInterface {
 	 */
 	private UntrustedStorageInterface storage;
 	private RandForORAMInterface rand_gen;
-	int bucket_size;
-	int num_blocks;
-	int[] positionMap;
+	private int bucket_size;
+	private int num_blocks;
+	private int[] positionMap;
 
-	List<Block> stash = new ArrayList<>();
+	private ArrayList<Block> stash = new ArrayList<>();
 	
 	public ORAMWithReadPathEviction(UntrustedStorageInterface storage,
 									RandForORAMInterface rand_gen, int bucket_size, int num_blocks) {
@@ -43,6 +42,43 @@ public class ORAMWithReadPathEviction implements ORAMInterface {
 		return 0;
 	}
 
+	public ArrayList<Integer> P(int x) {
+		ArrayList<Integer> path = new ArrayList<>();
+
+		// ID of root bucket is the number of leaves - 1
+		path.add(getNumBuckets() - 1);
+		int lftCnt = 0;
+		int lvl = 0;
+		int upperBound = getNumLeaves();
+		int lowerBound = 0;
+
+		// Loop until x is in the path
+		while (path.get(path.size() - 1) > x) {
+
+			// Determine middle of leaves (to act as new upper or lower bound)
+			int mid = ((upperBound - lowerBound) / 2) + lowerBound;
+			if (mid > x) {
+				// x is on the left of this bucket
+				lftCnt++;
+				upperBound = mid;
+			} else {
+				// x is on the right of this bucket
+				lowerBound = mid;
+			}
+
+			// If the upper and lower bound as next to each other, then x should be one of the leaves
+			if (upperBound - lowerBound <= 1 && (upperBound == x || lowerBound == x)) {
+				path.add(x);
+				break;
+			}
+
+			// Use the level and the left count to determine ID of next Bucket
+			path.add(path.get(path.size() - 1) - (int)Math.pow(2, lvl) - lftCnt);
+			lvl++;
+		}
+		return path;
+	}
+
 
 	@Override
 	public int[] getPositionMap() {
@@ -53,8 +89,7 @@ public class ORAMWithReadPathEviction implements ORAMInterface {
 
 	@Override
 	public ArrayList<Block> getStash() {
-		// TODO Must complete this method for submission
-		return null;
+		return this.stash;
 	}
 
 
@@ -66,29 +101,25 @@ public class ORAMWithReadPathEviction implements ORAMInterface {
 
 	@Override
 	public int getNumLeaves() {
-		// TODO Must complete this method for submission
-		return 0;
+		return (int) Math.pow(2, getNumLevels());
 	}
 
 
 	@Override
 	public int getNumLevels() {
-		// TODO Must complete this method for submission
-		return 0;
+		return (int) Math.ceil(Math.log(this.num_blocks) / Math.log(2));
 	}
 
 
 	@Override
 	public int getNumBlocks() {
-		// TODO Must complete this method for submission
-		return 0;
+		return this.num_blocks;
 	}
 
 
 	@Override
 	public int getNumBuckets() {
-		// TODO Must complete this method for submission
-		return 0;
+		return (int) Math.pow(2, getNumLevels() + 1) - 1;
 	}
 
 
