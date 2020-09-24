@@ -1,6 +1,7 @@
 package pathOramHw;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /*
  * Name: Martijn de Vries, Dennis Cai
@@ -8,10 +9,7 @@ import java.util.ArrayList;
  */
 
 public class ORAMWithReadPathEviction implements ORAMInterface {
-	
-	/**
-	 * TODO add necessary variables
-	 */
+
 	private UntrustedStorageInterface storage;
 	private RandForORAMInterface rand_gen;
 	private int bucket_size;
@@ -42,10 +40,17 @@ public class ORAMWithReadPathEviction implements ORAMInterface {
 		return 0;
 	}
 
+	/**
+	 * Creates a path from the root Bucket to the given leaf <code>x</code>. This methods uses the ID of the Buckets
+	 * and assumes the leftmost leaf has ID 0, going from left to right, bottom to top (root Bucket has ID
+	 * <code>num_buckets</code> - 1)
+	 * @param x ID of leaf node at the end of the path
+	 * @return A list of Bucket IDs from the root to <code>x</code>
+	 */
 	public ArrayList<Integer> P(int x) {
 		ArrayList<Integer> path = new ArrayList<>();
 
-		// ID of root bucket is the number of leaves - 1
+		// ID of root bucket is the number of buckets - 1
 		path.add(getNumBuckets() - 1);
 		int lftCnt = 0;
 		int lvl = 0;
@@ -66,7 +71,7 @@ public class ORAMWithReadPathEviction implements ORAMInterface {
 				lowerBound = mid;
 			}
 
-			// If the upper and lower bound as next to each other, then x should be one of the leaves
+			// If the upper and lower bound next to each other, then x should be one of the leaves
 			if (upperBound - lowerBound <= 1 && (upperBound == x || lowerBound == x)) {
 				path.add(x);
 				break;
@@ -76,6 +81,8 @@ public class ORAMWithReadPathEviction implements ORAMInterface {
 			path.add(path.get(path.size() - 1) - (int)Math.pow(2, lvl) - lftCnt);
 			lvl++;
 		}
+		// Reverse path so it goes from x to root
+		Collections.reverse(path);
 		return path;
 	}
 
@@ -101,24 +108,28 @@ public class ORAMWithReadPathEviction implements ORAMInterface {
 
 	@Override
 	public int getNumLeaves() {
+		// no leaves = 2^L
 		return (int) Math.pow(2, getNumLevels());
 	}
 
 
 	@Override
 	public int getNumLevels() {
+		// L = log_2(N) (rounded up)
 		return (int) Math.ceil(Math.log(this.num_blocks) / Math.log(2));
 	}
 
 
 	@Override
 	public int getNumBlocks() {
+		// N
 		return this.num_blocks;
 	}
 
 
 	@Override
 	public int getNumBuckets() {
+		// no buckets = 2^(L+1) - 1
 		return (int) Math.pow(2, getNumLevels() + 1) - 1;
 	}
 

@@ -2,8 +2,6 @@ package pathOramHw;
 
 import java.util.ArrayList;
 
-import javax.management.RuntimeErrorException;
-
 /*
  * Name: Martijn de Vries, Dennis Cai
  * StudentID: s1549405, s1592041
@@ -12,29 +10,32 @@ import javax.management.RuntimeErrorException;
 public class Bucket {
 	private static boolean is_init = false;
 	private static int max_size_Z = -1;
-	
+
+	private int id;
 	private ArrayList<Block> blocks;
 	private int realSize;
 	
-	Bucket() {
+	public Bucket(int id) {
 		if (!is_init) {
 			throw new RuntimeException("Please set bucket size before creating a bucket");
 		}
+		this.id = id;
 		this.blocks = new ArrayList<>();
 		this.realSize = 0;
 	}
 	
 	// Copy constructor
-	Bucket(Bucket other) {
+	public Bucket(Bucket other) {
 		if (other == null) {
 			throw new RuntimeException("the other bucket is not malloced.");
 		}
+		this.id = other.id;
 		this.blocks = other.blocks;
 		this.realSize = other.realSize;
 	}
 	
 	//Implement and add your own methods.
-	Block getBlockByKey(int key) {
+	public Block getBlockByKey(int key) {
 		for (Block b : this.blocks) {
 			if (b.index == key) {
 				return b;
@@ -42,8 +43,8 @@ public class Bucket {
 		}
 		return null;
 	}
-	
-	void addBlock(Block new_blk) {
+
+	public void addBlock(Block new_blk) {
 		if (this.blocks.size() < max_size_Z) {
 			// add block to bucket
 			this.blocks.add(new_blk);
@@ -55,28 +56,44 @@ public class Bucket {
 			throw new RuntimeException("Bucket is already at max size Z");
 		}
 	}
-	
-	boolean removeBlock(Block rm_blk) {
+
+	public boolean removeBlock(Block rm_blk) {
 		this.blocks.remove(rm_blk);
 		if (rm_blk.index > -1) {
 			this.realSize--;
 		}
 		return true;
 	}
-	
-	ArrayList<Block> getBlocks() {
-		return blocks;
-	}
-	
-	int returnRealSize() {
-		return realSize;
+
+	public int getId() {
+		return this.id;
 	}
 
-	static void resetState() {
+	public void setId(int new_id) {
+		this.id = new_id;
+	}
+
+	public ArrayList<Block> getBlocks() {
+		return this.blocks;
+	}
+
+	public void setBlocks(ArrayList<Block> new_blocks) {
+		this.blocks = new_blocks;
+	}
+
+	public int getRealSize() {
+		return this.realSize;
+	}
+
+	public void setRealSize(int new_real_size) {
+		this.realSize = new_real_size;
+	}
+
+	public static void resetState() {
 		is_init = false;
 	}
 
-	static void setMaxSize(int maximumSize) {
+	public static void setMaxSize(int maximumSize) {
 		if (is_init) {
 			throw new RuntimeException("Max Bucket Size was already set");
 		}
