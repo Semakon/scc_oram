@@ -25,19 +25,28 @@ public class ORAMWithReadPathEviction implements ORAMInterface {
 		this.bucket_size = bucket_size;
 		this.num_blocks = num_blocks;
 		this.positionMap = new int[num_blocks];
+
+		// populate position map with random variables
+		rand_gen.setBound(getNumLeaves());
+		for (int i = 0; i < num_blocks; i++) {
+			this.positionMap[i] = rand_gen.getRandomLeaf();
+		}
 	}
 
 	@Override
 	public byte[] access(Operation op, int blockIndex, byte[] newdata) {
-		// TODO Must complete this method for submission
+
 		return null;
 	}
 
 
 	@Override
 	public int P(int leaf, int level) {
+		ArrayList<Integer> path = P(leaf);
 
-		return 0;
+		// reverse path to start from root (level 0)
+		Collections.reverse(path);
+		return path.get(level);
 	}
 
 	/**
@@ -71,7 +80,7 @@ public class ORAMWithReadPathEviction implements ORAMInterface {
 				lowerBound = mid;
 			}
 
-			// If the upper and lower bound next to each other, then x should be one of the leaves
+			// If the upper and lower bound are next to each other, then x should be one of the leaves
 			if (upperBound - lowerBound <= 1 && (upperBound == x || lowerBound == x)) {
 				path.add(x);
 				break;
@@ -89,8 +98,7 @@ public class ORAMWithReadPathEviction implements ORAMInterface {
 
 	@Override
 	public int[] getPositionMap() {
-		// TODO Must complete this method for submission
-		return null;
+		return this.positionMap;
 	}
 
 
@@ -102,8 +110,7 @@ public class ORAMWithReadPathEviction implements ORAMInterface {
 
 	@Override
 	public int getStashSize() {
-		// TODO Must complete this method for submission
-		return 0;
+		return this.stash.size();
 	}
 
 	@Override
