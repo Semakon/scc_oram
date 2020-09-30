@@ -52,25 +52,36 @@ public class ORAMWithReadPathEviction implements ORAMInterface {
 		// Read path
 		for (int l = 0; l <= getNumLevels(); l++) {
 			ArrayList<Block> bucket_blocks = this.storage.ReadBucket(P(x, l)).getBlocks();
-			this.stash.addAll(bucket_blocks);
+			for (Block b : bucket_blocks) {
+				if (b.index >= 0) {
+					this.stash.add(b);
+				}
+			}
 		}
 
 		// Update block
 		Block block = null;
+		boolean found = false;
 		for (Block b : this.stash) {
 			if (b.index == a) {
 				block = b;
+				found = true;
 				break;
 			}
 		}
-		if (block == null) {
-			throw new RuntimeException("Block is not in stash");
+
+		byte[] data = null;
+		if (block != null) {
+			data = block.data;
 		}
 
-		byte[] data = block.data;
 		if (op == Operation.WRITE) {
-			this.stash.remove(block);
-			this.stash.add(new Block(a, newdata));
+			if (found) {
+				this.stash.get(this.stash.indexOf(block)).data = newdata;
+			} else {
+				block = new Block(a, newdata);
+				this.stash.add(block);
+			}
 		}
 
 		// Write path
@@ -83,7 +94,10 @@ public class ORAMWithReadPathEviction implements ORAMInterface {
 				}
 			}
 			Bucket stash_prime = new Bucket();
+			System.out.println("buckets: " + bucket_size);
+			System.out.println("temp size: " + temp.size());
 			for (int i = 0; i < Math.min(temp.size(), bucket_size); i++) {
+				System.out.println(i);
 				stash_prime.addBlock(temp.get(i));
 				this.stash.remove(temp.get(i));
 			}
