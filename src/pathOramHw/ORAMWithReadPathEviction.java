@@ -187,35 +187,31 @@ public class ORAMWithReadPathEviction implements ORAMInterface {
 		return path;
 	}
 
-//	public ArrayList<Integer> P(int x) {
-//		ArrayList<Integer> path = new ArrayList<>();
-//
-//		int numBuckets = getNumBuckets();
-//		int parent = getNumLeaves();
-//		int currentNode = x;
-//		int[] parentIds = new int[numBuckets - 1];
-//
-//		// Initialize the array of parent ids
-//		for (int i = 0; i < numBuckets - 2; i += 2) {
-//			// Set the parent of the two child nodes
-//			parentIds[i] = parent;
-//			parentIds[i + 1] = parent;
-//
-//			parent++;
-//		}
-//
-//		// Add the leaf node as the first entry to the path
-//		path.add(currentNode);
-//
-//		// Loop through the parentIds array to iteratively add the parents of the nodes to the path
-//		while (currentNode < numBuckets - 1) {
-//			int currentParent = parentIds[currentNode];
-//			path.add(currentParent);
-//
-//			currentNode = currentParent;
-//		}
-//		return path;
-//	}
+	public ArrayList<Integer> P2(int x) {
+		ArrayList<Integer> path = new ArrayList<>();
+
+		// The currently selected node
+		int currNode = x;
+
+		// Amount to increase the ID of the current node by
+		int currAdd = getNumBuckets() + 1;
+
+		// Calculate the length of the path
+		int pathLen = (int) (Math.log(getNumBuckets() + 1) / Math.log(2));
+
+		int ctr = 0;
+
+		while (ctr < pathLen) {
+			// Add the current node to the path
+			path.add(currNode);
+
+			// Calculate and set the ID of the next node in the path
+			currNode = (currNode / 2) + (currAdd / 2);
+
+			ctr++;
+		}
+		return path;
+	}
 
 	@Override
 	public int[] getPositionMap() {
