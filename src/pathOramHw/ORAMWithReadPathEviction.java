@@ -193,22 +193,12 @@ public class ORAMWithReadPathEviction implements ORAMInterface {
 		// The currently selected node
 		int currNode = x;
 
-		// Amount to increase the ID of the current node by
-		int currAdd = getNumBuckets() + 1;
-
-		// Calculate the length of the path
-		int pathLen = (int) (Math.log(getNumBuckets() + 1) / Math.log(2));
-
-		int ctr = 0;
-
-		while (ctr < pathLen) {
+		while (currNode < getNumBuckets()) {
 			// Add the current node to the path
 			path.add(currNode);
 
 			// Calculate and set the ID of the next node in the path
-			currNode = (currNode / 2) + (currAdd / 2);
-
-			ctr++;
+			currNode = (currNode / 2) + getNumLeaves();
 		}
 		return path;
 	}
