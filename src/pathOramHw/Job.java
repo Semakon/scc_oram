@@ -15,8 +15,9 @@ public class Job {
 
 	public static void main(String[] args) {
 		int bucket_size = 4;
-		int num_blocks = (int) Math.pow(2, 20);
-		
+//		int num_blocks = (int) Math.pow(2, 20);
+		int num_blocks = 4;
+
 		//Set the Bucket size for all the buckets.
 		Bucket.setMaxSize(bucket_size);
 				
@@ -37,13 +38,15 @@ public class Job {
 		}
 
 //		Do same sample computation: fill an array with numbers, then read it back.
-		for (int i = 0; i < 30000; i++) {
+		for (int i = 0; i < 2; i++) {
 			oram.access(Operation.WRITE, i % num_blocks, write_bbuf);
 			System.out.println("dbg written block " + i + " has stash size: " + oram.getStashSize());
+			System.out.println(Arrays.toString(oram.getPositionMap()));
 		}
 		
 		for (int i = 0; i < num_blocks; i++) {
 			System.out.println("dbg read from " + i + " value is :" + Arrays.toString(oram.access(Operation.READ, i, new byte[128])));
+			System.out.println(Arrays.toString(oram.getPositionMap()));
 		}
 	}
 }

@@ -1,7 +1,9 @@
 package pathOramHw;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 
 /*
  * Name: Martijn de Vries, Dennis Cai
@@ -41,6 +43,15 @@ public class ORAMWithReadPathEviction implements ORAMInterface {
 				this.storage.WriteBucket(i, new Bucket());
 			}
 		}
+
+		// debug
+		System.out.println("Number of Blocks:\t" + getNumBlocks());
+		System.out.println("Number of Buckets:\t" + getNumBuckets());
+		System.out.println("Number of Leaves:\t" + getNumLeaves());
+		System.out.println("Number of Levels:\t" + getNumLevels());
+
+		System.out.println(Arrays.toString(getPositionMap()));
+		System.out.println();
 	}
 
 	@Override
@@ -51,57 +62,71 @@ public class ORAMWithReadPathEviction implements ORAMInterface {
 
 		// Read path
 		for (int l = 0; l <= getNumLevels(); l++) {
-			ArrayList<Block> bucket_blocks = this.storage.ReadBucket(P(x, l)).getBlocks();
-			for (Block b : bucket_blocks) {
-				if (b.index >= 0) {
+			// Get bucket from path at level l
+			Bucket bucket = this.storage.ReadBucket(P(x, l));
+			for (int i = 0; i < bucket.getBlocks().size(); i++) {
+				Block b = bucket.getBlocks().get(i);
+				if (b.index > -1) {
+					// Not a dummy block, so add to stash
 					this.stash.add(b);
+				}
+				// Remove block from bucket
+				if (!bucket.removeBlock(b)) {
+					throw new RuntimeException("Could not remove block '"
+							+ b.index + "' from bucket");
 				}
 			}
 		}
 
 		// Update block
 		Block block = null;
-		boolean found = false;
 		for (Block b : this.stash) {
 			if (b.index == a) {
+				// block with index a is in the stash
 				block = b;
-				found = true;
 				break;
 			}
 		}
 
-		byte[] data = null;
+		// Initialize data to 0
+		byte[] data = new byte[32];
 		if (block != null) {
+			// get data from block a if it is in the stash
 			data = block.data;
 		}
 
+		// When performing a write
 		if (op == Operation.WRITE) {
-			if (found) {
-				this.stash.get(this.stash.indexOf(block)).data = newdata;
+			if (block != null) {
+				// if block a was in the stash, set its data to newdata
+				block.data = newdata;
 			} else {
+				// if block a was not in the stash, create it with newdata as its data
+				// and add to the stash (at beginning)
 				block = new Block(a, newdata);
-				this.stash.add(block);
+				this.stash.add(0, block);
 			}
 		}
 
 		// Write path
 		for (int l = getNumLevels(); l >= 0; l--) {
 			// Find all blocks in the stash that cross paths with x at l
-			ArrayList<Block> temp = new ArrayList<>();
+			ArrayList<Block> stash_prime = new ArrayList<>();
 			for (Block b : this.stash) {
 				if (P(x, l) == P(positionMap[b.index], l)) {
-					temp.add(b);
+					stash_prime.add(b);
+				}
+				if (stash_prime.size() >= bucket_size) {
+					// bucket full, stop adding blocks
+					break;
 				}
 			}
-			Bucket stash_prime = new Bucket();
-			System.out.println("buckets: " + bucket_size);
-			System.out.println("temp size: " + temp.size());
-			for (int i = 0; i < Math.min(temp.size(), bucket_size); i++) {
-				System.out.println(i);
-				stash_prime.addBlock(temp.get(i));
-				this.stash.remove(temp.get(i));
+			// Remove the blocks of S' from S
+			for (Block b : stash_prime) {
+				this.stash.remove(b);
 			}
-			this.storage.WriteBucket(P(x, l), stash_prime);
+			// Write bucket to storage
+			this.storage.WriteBucket(P(x, l), new Bucket(stash_prime));
 		}
 		return data;
 	}

@@ -1,6 +1,8 @@
 package pathOramHw;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /*
  * Name: Martijn de Vries, Dennis Cai
@@ -18,11 +20,21 @@ public class Bucket {
 		if (!is_init) {
 			throw new RuntimeException("Please set bucket size before creating a bucket");
 		}
+
+		// Fill bucket with dummy blocks
 		this.blocks = new ArrayList<>();
 		for (int i = 0; i < max_size_Z; i++) {
 			this.blocks.add(new Block());
 		}
+
+		// real size is initially 0 (bucket contains only dummy blocks)
 		this.realSize = 0;
+	}
+
+	public Bucket(ArrayList<Block> blocks) {
+		// Create bucket from list of blocks (no dummy blocks)
+		this.blocks = blocks;
+		this.realSize = blocks.size();
 	}
 	
 	// Copy constructor
@@ -48,21 +60,34 @@ public class Bucket {
 		if (this.blocks.size() < max_size_Z) {
 			// add block to bucket
 			this.blocks.add(new_blk);
+
+			// Increase real size if block is not a dummy block
 			if (new_blk.index > -1) {
 				this.realSize++;
 			}
 		} else {
 			// Bucket full
-			throw new RuntimeException("Bucket is already at max size Z");
+			throw new RuntimeException("Bucket is already at max size 'Z'");
 		}
 	}
 
 	public boolean removeBlock(Block rm_blk) {
-		this.blocks.remove(rm_blk);
-		if (rm_blk.index > -1) {
-			this.realSize--;
+		// remove block with same index as rm_blck
+		Iterator<Block> iter = this.blocks.iterator();
+		while (iter.hasNext()) {
+			Block b = iter.next();
+			if (b.index == rm_blk.index) {
+				// Decrease real size if block was not a dummy block
+				if (b.index > -1) {
+					this.realSize--;
+				}
+
+				// Remove block from bucket
+				iter.remove();
+				return true;
+			}
 		}
-		return true;
+		return false;
 	}
 
 	public ArrayList<Block> getBlocks() {
